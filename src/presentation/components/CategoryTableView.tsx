@@ -2,21 +2,23 @@ import { Box, Button, Card, Modal, TextField, Typography } from "@mui/material";
 import React from "react";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import AddIcon from "@mui/icons-material/Add";
-import Alert from "../components/Alert";
+import Alert from "./Alert";
+import {useNavigate} from "react-router-dom"
+import pageRoutes from "../../routes/pageRoutes";
 
 type myProps = {
   data: Array<any>;
 };
-const TableView: React.FC<myProps> = ({ data }) => {
+const CategoryTableView: React.FC<myProps> = ({ data }) => {
 
-  
+  const navigate = useNavigate()
   const [open, setOpen] = React.useState<boolean>(false);
   const [category, setCategory] = React.useState<string>('');
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   
-  const handleClick = (index: number) => {
-    alert(index);
+  const addProduct = (index: number, name: string) => {
+    navigate(pageRoutes.ADD_PRODUCTS, { state: { index: index, name: name } })
   };
   const styles= {
     modalView: {
@@ -87,7 +89,6 @@ const TableView: React.FC<myProps> = ({ data }) => {
   return (
     <Box>
       <table width="100%" style={{ textAlign: "left", paddingTop: "3%" }}>
-
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
           <Typography
             sx={{
@@ -107,8 +108,9 @@ const TableView: React.FC<myProps> = ({ data }) => {
         {data?.map((item, index) => {
           return (
             <>
-              <tr key={index}>
+              <tr>
                 <Card
+                  key={index}
                   style={{
                     cursor: "pointer",
                     display: "flex",
@@ -144,7 +146,7 @@ const TableView: React.FC<myProps> = ({ data }) => {
                       size="small"
                       color="warning"
                       sx={{ width: "200px" }}
-                      onClick={() => handleClick(index)}
+                      onClick={() => addProduct(index, item.category)}
                     >
                       Add Products
                     </Button>
@@ -154,6 +156,7 @@ const TableView: React.FC<myProps> = ({ data }) => {
             </>
           );
         })}
+
       </table>
 
       <Modal
@@ -174,8 +177,9 @@ const TableView: React.FC<myProps> = ({ data }) => {
           </Box>
         </Box>
     </Modal>
+
     </Box>
   );
 };
 
-export default TableView;
+export default CategoryTableView;

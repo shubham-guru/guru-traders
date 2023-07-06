@@ -1,11 +1,15 @@
 import React from 'react';
 import './App.css';
-import Home from './presentation/screens/Home';
+import AppRoutes from './routes/AppRoutes';
+import { BrowserRouter } from 'react-router-dom';
+
 
 function App() {
   return (
     <div className="App">
-      <Home />
+     <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </div>
   );
 }

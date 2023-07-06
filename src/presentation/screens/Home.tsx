@@ -5,13 +5,13 @@ import Alert from "../components/Alert";
 import firebase from 'firebase/compat/app'
 import firebaseConfig from "../../data/Firebase";
 import 'firebase/database';
-import TableView from "../components/TableView";
+import CategoryTableView from "../components/CategoryTableView";
 
 const Home = () => {
 
   const [open, setOpen] = React.useState<boolean>(false);
   const [category, setCategory] = React.useState<string>('');
-  const [info, setInfo] = React.useState<Array<any>>([]);
+  const [info, setInfo] = React.useState<Array<any>>(['']);
   
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -88,18 +88,20 @@ const Home = () => {
 
   const getCategories = () => {
     firebase.initializeApp(firebaseConfig);
-    const tableRef:any = firebase?.database()?.ref('categories');
-    tableRef?.on('value', (snapshot: any) => {
-      const tableData: any = snapshot?.val();
-      const dataArray: any = Object.values(tableData);
-      setInfo(dataArray);
+    const tableRef:any = firebase.database().ref('categories');
+    tableRef.on('value', (snapshot: any) => {
+      const tableData: any = snapshot.val();
+      if(tableData){
+        const dataArray: any = Object.values(tableData);
+        setInfo(dataArray);
+      } else{}
     });
   }
 
 
   return (
     <Box>
-     {info?.length > 0 ?  <TableView data={info} /> :
+     {info?.length > 0 ?  <CategoryTableView data={info} /> :
     <Card
       onClick={handleOpen}
       sx={styles.boxView}>
