@@ -6,42 +6,45 @@ import firebase from "firebase/compat/app";
 import firebaseConfig from "../../data/Firebase";
 import "firebase/database";
 import ProductTabelView from "./ProductTabelView";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import {useNavigate} from "react-router-dom"
+import pageRoutes from "../../routes/pageRoutes";
+
 
 const Product = () => {
   const [productName, setProductName] = useState<string>("");
   const [productQty, setProductQty] = useState<number>(0);
   const [info, setInfo] = useState<Array<any>>([{}]);
 
-  const location = useLocation();
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const handleSubmit = async () => {
-    const params = {
-      name: productName,
-      quantity: productQty,
-      category: location.state.name,
-    };
+
     if (!productName.trim()) {
       Alert.fire({
         icon: "error",
-        title: "Field cannot be empty",
+        title: "Fields cannot be empty",
       });
     } else {
       const res: any = await fetch(
-        "https://guru-traders-d3c0c-default-rtdb.asia-southeast1.firebasedatabase.app/products.json",
+        `https://guru-traders-d3c0c-default-rtdb.asia-southeast1.firebasedatabase.app/products/${location.state.name}.json`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            params,
+           name: productName,
+          quantity: productQty,
+          category: location.state.name,
           }),
         }
       );
       if (res) {
         Alert.fire({
           icon: "success",
-          title: "Products has been successfully added !",
+          title: "Product has been successfully added !",
         });
       } else {
         Alert.fire({
@@ -56,21 +59,24 @@ const Product = () => {
     getProducts();
   }, []);
 
+ 
   const getProducts = () => {
     firebase.initializeApp(firebaseConfig);
-    const tableRef: any = firebase.database().ref("products");
+    const tableRef = firebase.database().ref('products/'+location.state.name);
     tableRef.on("value", (snapshot: any) => {
-      const tableData: any = snapshot.val();
+      const tableData = snapshot.val();
       if(tableData){
-        const dataArray: any = Object.values(tableData);
+        const dataArray = Object.values(tableData);
         setInfo(dataArray);
       } else {}
     });
   };
 
+
   return (
     <Box>
-     { (Object.keys(info[0]).length || info[0]?.params?.category)  ? <ProductTabelView data={info} category={location.state.name} /> :  <Box sx={{ paddingTop: 3 }}>
+      <KeyboardBackspaceIcon sx={{ float: "left", margin: 2, cursor: 'pointer' }} onClick={()=>navigate(pageRoutes.HOME)} />
+     { (Object.keys(info[0]).length)  ? <ProductTabelView data={info} category={location.state.name} /> :  <Box sx={{ paddingTop: 3 }}>
         <Typography
           variant="h5"
           fontFamily={"Belanosima, sans-serif"}
@@ -79,6 +85,7 @@ const Product = () => {
         >
           <u>Add Products in {location.state.name.toUpperCase()} Category</u>
         </Typography>
+
 
         <Card sx={{ width: 500, padding: 3, margin: "100px auto" }}>
           <TextField

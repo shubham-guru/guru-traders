@@ -11,7 +11,7 @@ const Home = () => {
 
   const [open, setOpen] = React.useState<boolean>(false);
   const [category, setCategory] = React.useState<string>('');
-  const [info, setInfo] = React.useState<Array<any>>(['']);
+  const [info, setInfo] = React.useState<Array<any>>([]);
   
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -101,7 +101,13 @@ const Home = () => {
 
   return (
     <Box>
-     {info?.length > 0 ?  <CategoryTableView data={info} /> :
+     {info?.length > 0 ?  
+    <CategoryTableView data={info} /> :
+    
+    <Box>
+    <Typography variant="h2" paddingTop={3} fontFamily={'Ysabeau Office, sans-serif'} fontWeight={'bold'} letterSpacing={4} color={'#654'}>
+      Guru Traders
+    </Typography>
     <Card
       onClick={handleOpen}
       sx={styles.boxView}>
@@ -114,7 +120,9 @@ const Home = () => {
           Add Category
         </Typography>
       <AddIcon color="warning" fontSize="large" />
-    </Card>}
+    </Card>
+    </Box>
+    }
 
     <Modal
         open={open}
