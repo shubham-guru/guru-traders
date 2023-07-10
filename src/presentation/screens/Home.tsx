@@ -16,7 +16,7 @@ const Home = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const styles= {
+  const styles= { 
     modalView: {
       position: 'absolute' as 'absolute',
       top: '50%',
@@ -100,7 +100,7 @@ const Home = () => {
 
 
   return (
-    <Box>
+    <Box sx={{height: '100vh'}}>
      {info?.length > 0 ?  
     <CategoryTableView data={info} /> :
     

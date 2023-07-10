@@ -13,6 +13,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import Alert from "./Alert";
+import actions from "../../domain/Actions";
+import firebase from "firebase/compat/app";
+import firebaseConfig from "../../data/Firebase";
+import "firebase/database";
 
 type myProps = {
   data: Array<any>;
@@ -22,9 +26,22 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [productName, setProductName] = useState<string>("");
   const [productQty, setProductQty] = useState<number>(0);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [updatedValue, setUpdatedValue] = useState<number>(0);
+  const [action, setAction] = useState<string>("");
+  const [selectedName, setSelectedName] = useState<string>("");
+  const [delectedProduct, setDelectedProduct] = useState<string>('');
 
+  const handleOpen = (value: string, name: string) => {
+    setOpen(true);
+    setAction(value);
+    setSelectedName(name);
+    setProductName('')
+    setProductQty(0)
+  };
+  const handleClose = () => {
+    setOpen(false)
+    setUpdatedValue(0)
+  }
 
   const handleSubmit = async () => {
     if (!productName.trim()) {
@@ -62,6 +79,76 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
     }
   };
 
+  const updateQty = (action: string, value: any, name: string) => {
+    firebase.initializeApp(firebaseConfig);
+    const tableRef = firebase.database().ref('products/'+category);
+    tableRef.once("value",  (snapshot: any) => {
+    const tableData = snapshot.val()
+    if(tableData){  
+      updateRemoteObj(tableData, action, value, name)
+          tableRef.update(tableData)
+          .then(() => {
+            Alert.fire({
+              icon: "success",
+              title: "Quantity updated successfully",
+            });
+            handleClose()      
+        })
+          .catch((error) => {
+            Alert.fire({
+              icon: "error",
+              title: "Something went wrong",
+            });      
+          });   
+    }
+    });
+  }
+
+  const updateRemoteObj = (tableData: any, action: string, value: any, name: string) => {
+    Object.keys(tableData).forEach((item)=>{
+      if(action === actions.ADD && tableData[item].name === name) {
+        var updatedQty = parseInt(tableData[item].quantity);
+        var updatedVal = parseInt(value);
+        Object.assign(tableData[item], { quantity: JSON.stringify(updatedQty + updatedVal) })
+      } 
+      else if(action === actions.MINUS && tableData[item].name === name) {
+        var tempValue = parseInt(tableData[item].quantity) - parseInt(value)
+        var finalValue = tempValue < 0 ? 0 : tempValue
+        Object.assign(tableData[item], { quantity: JSON.stringify(finalValue) })
+      } 
+      else if(action === actions.DELETE && tableData[item].name === name){
+          setDelectedProduct(item)
+      }
+    })
+    return tableData
+  }
+
+  const deleteProduct = (deleteProduct: string) => {
+    firebase.initializeApp(firebaseConfig);
+    const tableRef = firebase.database().ref("products/"+category+delectedProduct);
+    tableRef.once("value",  (snapshot: any) => {
+    const tableData = snapshot.val()
+    if(tableData){
+      updateRemoteObj(tableData, action, null, deleteProduct)
+        //   tableRef.remove()
+        //   .then(() => {
+        //     Alert.fire({
+        //       icon: "success",
+        //       title: "Product delected successfully",
+        //     });
+        //     handleClose()      
+        // })
+        //   .catch((error) => {
+        //     Alert.fire({
+        //       icon: "error",
+        //       title: "Something went wrong",
+        //     });      
+        //   });   
+    }
+    });    
+  }
+
+  console.log(delectedProduct)
   const styles = {
     modalView: {
       position: "absolute" as "absolute",
@@ -105,7 +192,7 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
 
           <Button
             variant="outlined"
-            onClick={handleOpen}
+            onClick={() => handleOpen("","")}
             endIcon={<AddIcon />}
             color="warning"
           >
@@ -136,7 +223,7 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
                     display: "flex",
                     justifyContent: "space-around",
                     alignItems: "center",
-                    marginTop: ".4%",
+                    margin: "1%",
                   }}
                 >
                   <Box
@@ -146,7 +233,7 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
                       justifyContent: "space-around",
                       width: "100%",
                       backgroundColor: "#fff",
-                      margin: 2,
+                      padding: 2,
                     }}
                   >
                     <Typography
@@ -158,7 +245,7 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
                         letterSpacing: 2,
                       }}
                     >
-                      {item.name}
+                      {item.name.toUpperCase()}
                     </Typography>
 
                     <Typography
@@ -177,13 +264,14 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
                       size="small"
                       aria-label="outlined button group"
                     >
-                      <IconButton>
+                      <IconButton onClick={() => handleOpen(actions.ADD, item.name)}>
                         <AddIcon color="warning" />
                       </IconButton>
-                      <IconButton>
+
+                      <IconButton onClick={() => handleOpen(actions.MINUS, item.name)}>
                         <RemoveIcon color="warning" />
                       </IconButton>
-                      <IconButton>
+                      <IconButton onClick={()=> handleOpen(actions.DELETE, item.name)}>
                         <DeleteIcon color="warning" />
                       </IconButton>
                     </ButtonGroup>
@@ -198,45 +286,109 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
 
       <Modal open={open} onClose={handleClose}>
         <Card sx={styles.modalView}>
-          <TextField
-            size="small"
-            label="Product Name"
-            fullWidth
-            value={productName}
-            sx={{ marginBottom: 4 }}
-            onChange={(e: any) => setProductName(e.target.value)}
-            autoComplete="off"
-            autoCapitalize="on"
-          />
-          <TextField
-            type="tel"
-            size="small"
-            label="Quantity"
-            fullWidth
-            value={productQty}
-            onChange={(e: any) => setProductQty(e.target.value)}
-            autoComplete="off"
-            autoCapitalize="on"
-          />
+          {action === actions.ADD || action === actions.MINUS ? (
+            <Box>
+                <Typography variant="h5" textAlign={'center'} marginBottom={3} fontFamily={'Belanosima, sans-serif'}>{action} Quantity</Typography>
+                <TextField
+                type="tel"
+                size="small"
+                autoComplete="off"
+                value={updatedValue}
+                onChange={(e: any) => setUpdatedValue(e.target.value)}
+                />
 
-          <Box>
-            <Button
-              variant="outlined"
-              color="warning"
-              sx={{ marginTop: 3, marginRight: 3 }}
-              onClick={handleClose}
-            >
-              Close
-            </Button>
-            <Button
-              variant="contained"
-              color="warning"
-              sx={{ marginTop: 3, marginRight: 3 }}
-              onClick={handleSubmit}
-            >
-              Add Product
-            </Button>
-          </Box>
+                <Box>
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  sx={{ marginTop: 3, marginRight: 3 }}
+                  onClick={handleClose}
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  sx={{ marginTop: 3, marginRight: 3 }}
+                  onClick={()=>updateQty(action, updatedValue, selectedName)}
+                >
+                  update
+                </Button>
+                </Box>
+
+            </Box>
+          ) : 
+            action === actions.DELETE ? (
+              <Box>
+                <Typography variant="h5" textAlign={'center'} marginBottom={3} fontFamily={'Belanosima, sans-serif'}>{action} Product</Typography>
+                <Typography fontFamily={'Ysabeau Office, sans-serif'} fontWeight={'bold'}>Are you sure you want to delete this product</Typography>
+                <Typography fontFamily={'Ysabeau Office, sans-serif'} fontWeight={'bold'} textAlign={'center'}>This action cannot be undone !</Typography>
+
+                <Box sx={{textAlign: 'center'}}>
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  sx={{ marginTop: 3, marginRight: 3 }}
+                  onClick={handleClose}
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  sx={{ marginTop: 3, marginRight: 3 }}
+                  onClick={()=>deleteProduct(selectedName)}
+                >
+                  Yes, delete
+                </Button>
+                </Box>
+
+            </Box>
+            ) 
+            :
+          (
+            <div style={{textAlign: 'center'}}>
+              <TextField
+                size="small"
+                label="Product Name"
+                fullWidth
+                value={productName}
+                sx={{ marginBottom: 4 }}
+                onChange={(e: any) => setProductName(e.target.value)}
+                autoComplete="off"
+                autoCapitalize="on"
+              />
+              <TextField
+                type="tel"
+                size="small"
+                label="Quantity"
+                fullWidth
+                value={productQty}
+                onChange={(e: any) => setProductQty(e.target.value)}
+                autoComplete="off"
+                autoCapitalize="on"
+              />
+
+              <Box>
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  sx={{ marginTop: 3, marginRight: 3 }}
+                  onClick={handleClose}
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  sx={{ marginTop: 3, marginRight: 3 }}
+                  onClick={handleSubmit}
+                >
+                  Add Product
+                </Button>
+              </Box>
+            </div>
+          )}
         </Card>
       </Modal>
     </Box>

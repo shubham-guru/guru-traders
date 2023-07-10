@@ -1,6 +1,7 @@
 import { Box, Button, Card, Modal, TextField, Typography } from "@mui/material";
 import React from "react";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import CategorySharpIcon from '@mui/icons-material/CategorySharp';
 import AddIcon from "@mui/icons-material/Add";
 import Alert from "./Alert";
 import {useNavigate} from "react-router-dom"
@@ -87,7 +88,7 @@ const CategoryTableView: React.FC<myProps> = ({ data }) => {
   }
   
   return (
-    <Box>
+    <Box  sx={{height: '100vh'}}>
       <table width="100%" style={{ textAlign: "left", paddingTop: "3%" }}>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
           <Typography
@@ -138,17 +139,18 @@ const CategoryTableView: React.FC<myProps> = ({ data }) => {
                         letterSpacing: 2,
                       }}
                     >
-                      {item.category}
+                      {(item.category).toUpperCase()}
                     </Typography>
                   </Box>
                   <Box>
                     <Button
                       size="small"
                       color="warning"
+                      endIcon={<CategorySharpIcon />}
                       sx={{ width: "200px" }}
                       onClick={() => addProduct(index, item.category)}
                     >
-                      Add Products
+                      Products
                     </Button>
                   </Box>
                 </Card>
