@@ -29,7 +29,6 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
   const [updatedValue, setUpdatedValue] = useState<number>(0);
   const [action, setAction] = useState<string>("");
   const [selectedName, setSelectedName] = useState<string>("");
-  const [delectedProduct, setDelectedProduct] = useState<string>('');
 
   const handleOpen = (value: string, name: string) => {
     setOpen(true);
@@ -117,7 +116,7 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
         Object.assign(tableData[item], { quantity: JSON.stringify(finalValue) })
       } 
       else if(action === actions.DELETE && tableData[item].name === name){
-          setDelectedProduct(item)
+          Object.assign(tableData, [item])
       }
     })
     return tableData
@@ -125,30 +124,29 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
 
   const deleteProduct = (deleteProduct: string) => {
     firebase.initializeApp(firebaseConfig);
-    const tableRef = firebase.database().ref("products/"+category+delectedProduct);
+    const tableRef = firebase.database().ref("products/"+category);
     tableRef.once("value",  (snapshot: any) => {
     const tableData = snapshot.val()
     if(tableData){
-      updateRemoteObj(tableData, action, null, deleteProduct)
-        //   tableRef.remove()
-        //   .then(() => {
-        //     Alert.fire({
-        //       icon: "success",
-        //       title: "Product delected successfully",
-        //     });
-        //     handleClose()      
-        // })
-        //   .catch((error) => {
-        //     Alert.fire({
-        //       icon: "error",
-        //       title: "Something went wrong",
-        //     });      
-        //   });   
+      var deletedId = updateRemoteObj(tableData, action, null, deleteProduct)[0]
+      const newRef = firebase.database().ref("products/"+category+'/'+deletedId)
+          newRef.remove()
+          .then(() => {
+            Alert.fire({
+              icon: "success",
+              title: "Product deleted successfully",
+            });
+            handleClose()      
+        })
+          .catch((error) => {
+            Alert.fire({
+              icon: "error",
+              title: "Something went wrong",
+            });      
+          });   
     }
     });    
   }
-
-  console.log(delectedProduct)
   const styles = {
     modalView: {
       position: "absolute" as "absolute",
@@ -166,8 +164,9 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
     },
   };
 
+
   return (
-    <Box>
+    <Box sx={{backgroundColor: 'antiquewhite'}}>
       <table width="100%">
         <div
           style={{
@@ -187,7 +186,7 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
               fontFamily: "Belanosima, sans-serif",
             }}
           >
-            All Products of {category.toUpperCase()}
+            All Products of {category?.toUpperCase()}
           </Typography>
 
           <Button
@@ -214,10 +213,8 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
 
         {data?.map((item, index) => {
           return (
-            <>
-              <tr>
+              <tr key={index}>
                 <Card
-                  key={index}
                   style={{
                     cursor: "pointer",
                     display: "flex",
@@ -245,7 +242,7 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
                         letterSpacing: 2,
                       }}
                     >
-                      {item.name.toUpperCase()}
+                      {item?.name?.toUpperCase()}
                     </Typography>
 
                     <Typography
@@ -279,7 +276,6 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
                   <Box></Box>
                 </Card>
               </tr>
-            </>
           );
         })}
       </table>

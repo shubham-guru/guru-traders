@@ -73,10 +73,15 @@ const Product = () => {
   };
 
 
+  useEffect(()=>{
+
+  }, [info])
+
   return (
-    <Box>
+    <Box sx={{height: '100vh'}}>
       <KeyboardBackspaceIcon sx={{ float: "left", margin: 2, cursor: 'pointer' }} onClick={()=>navigate(pageRoutes.HOME)} />
-     { (Object.keys(info[0]).length)  ? <ProductTabelView data={info} category={location.state.name} /> :  <Box sx={{ paddingTop: 3, height: '100vh' }}>
+     { Object.keys(info[0]).length  ? <ProductTabelView data={info} category={location.state.name} /> :  
+     <Box sx={{ paddingTop: 3 }}>
         <Typography
           variant="h5"
           fontFamily={"Belanosima, sans-serif"}
@@ -87,7 +92,7 @@ const Product = () => {
         </Typography>
 
 
-        <Card sx={{ width: 500, padding: 3, margin: "100px auto" }}>
+        <Card sx={{ padding: 4, margin: '100px 10px 10px 10px', width: 'auto' }}>
           <TextField
             size="small"
             label="Product Name"

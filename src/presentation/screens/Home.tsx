@@ -100,7 +100,7 @@ const Home = () => {
 
 
   return (
-    <Box sx={{height: '100vh'}}>
+    <Box sx={{padding: '10px 12px 50px 12px'}}>
      {info?.length > 0 ?  
     <CategoryTableView data={info} /> :
     
