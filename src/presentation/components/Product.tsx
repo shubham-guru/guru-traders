@@ -76,7 +76,7 @@ const Product = () => {
   return (
     <Box>
       <KeyboardBackspaceIcon sx={{ float: "left", margin: 2, cursor: 'pointer' }} onClick={()=>navigate(pageRoutes.HOME)} />
-     { (Object.keys(info[0]).length)  ? <ProductTabelView data={info} category={location.state.name} /> :  <Box sx={{ paddingTop: 3 }}>
+     { (Object.keys(info[0]).length)  ? <ProductTabelView data={info} category={location.state.name} /> :  <Box sx={{ paddingTop: 3, height: '100vh' }}>
         <Typography
           variant="h5"
           fontFamily={"Belanosima, sans-serif"}
