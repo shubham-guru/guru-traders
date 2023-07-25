@@ -1,0 +1,61 @@
+.main {
+  background-color: #20242b;
+}
+.footerTxt {
+  font-size: 13px;
+  color: #a7a7a7;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+.footerTxt2 {
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: -26px;
+  text-decoration: underline !important;
+  color: #a7a7a7;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.footerTxt2:hover{
+    color: #00fff2ba;
+}
+
+.heading {
+  font-family: 'Ysabeau Office', sans-serif;
+  color: #fcfcfc;
+  font-size: 40px;
+}
+
+@media screen and (min-width: 250px) {
+  .imageCol {
+    display: none;
+  }
+  .main {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media screen and (min-width: 900px) {
+  .imageCol {
+    display: flex;
+    height: 100vh;
+  }
+  .main {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+    height: 100vh;
+  }
+}
+
+.col-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

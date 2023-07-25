@@ -1,0 +1,64 @@
+.main-card{
+  width: 100%;
+  border: none;
+  background-color: transparent;
+}
+.inputField {
+  margin-bottom: 2;
+}
+.btnStyle {
+  width: 9em;
+  height: 2em;
+  border-radius: 30em;
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+}
+
+.main-box {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  padding: 40px;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.user-input {
+  width: 100%;
+  font-size: 16px;
+  border: 1px solid #00fff2;
+  height: 40px !important;
+  background-color: #1f2329 !important;
+  outline: none;
+  font-family: "Mulish", sans-serif;
+  color: white;
+}
+
+.user-input::placeholder{
+  color: white ;
+  font-size: 14px;
+}
+
+.submitBtn {
+  color: #ffffff;
+  width: 100%;
+  background-color: #00fff29c;
+  font-size: 16px;
+  border: none;
+  text-transform: uppercase;
+  transition: 0.5s;
+  letter-spacing: 4px;
+}
+
+.submitBtn:hover {
+  background: #00fff2;
+  border-radius: 5px;
+  color: black !important;
+  box-shadow: 0 0 1px #01FFF4, 0 0 1px #01FFF4, 0 0 1px #01FFF4, 0 0 4px #01FFF4;
+}

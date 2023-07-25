@@ -88,8 +88,8 @@ const CategoryTableView: React.FC<myProps> = ({ data }) => {
   }
   
   return (
-    <Box  sx={{height: '100vh'}}>
-      <table width="100%" style={{ textAlign: "left", paddingTop: "3%" }}>
+    <Box>
+      <table width="100%" style={{ textAlign: "left", }}>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
           <Typography
             sx={{

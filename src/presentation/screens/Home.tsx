@@ -1,20 +1,30 @@
 import { Box, Button, Card, Modal, TextField, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import Alert from "../components/Alert";
-import firebase from 'firebase/compat/app'
-import firebaseConfig from "../../data/Firebase";
-import 'firebase/database';
+import firebase from '../../data/Firebase'
 import CategoryTableView from "../components/CategoryTableView";
+import { Tooltip } from "antd";
+import { LogoutOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import '../css/home.css'
+import pageRoutes from "../../routes/pageRoutes";
+import Protected from "../components/Protected";
 
 const Home = () => {
 
-  const [open, setOpen] = React.useState<boolean>(false);
-  const [category, setCategory] = React.useState<string>('');
-  const [info, setInfo] = React.useState<Array<any>>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [category, setCategory] = useState<string>('');
+  const [info, setInfo] = useState<Array<any>>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [userEmail, setUserEmail] = useState<string>("");
+
+
   
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const navigate = useNavigate();
+
 
   const styles= { 
     modalView: {
@@ -83,11 +93,21 @@ const Home = () => {
   }
 
   useEffect(()=>{
+    const email: any = localStorage.getItem("userData");
+    setUserEmail(email);
+
+    // Checking User isLoggedIn or not
+    if(localStorage.getItem("userData")){
+      setIsLoggedIn(true)
+    }else{
+      setIsLoggedIn(false)
+    }
+
     getCategories()
   },[])
 
+
   const getCategories = () => {
-    firebase.initializeApp(firebaseConfig);
     const tableRef:any = firebase.database().ref('categories');
     tableRef.on('value', (snapshot: any) => {
       const tableData: any = snapshot.val();
@@ -98,9 +118,44 @@ const Home = () => {
     });
   }
 
+  const handleLogout = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        Alert.fire({
+          icon: "success",
+          title: "Logged out successfully",
+        });
+        localStorage.removeItem("userData");
+        navigate(pageRoutes.AUTH);
+      })
+      .catch((error) => {
+        Alert.fire({
+          icon: "error",
+          title: "Something went wrong",
+        });
+        console.error("Sign out error:", error);
+      });
+  };
+
 
   return (
-    <Box sx={{padding: '10px 12px 50px 12px'}}>
+    <Protected isLoggedIn={isLoggedIn}>
+      <Card className="main-card">
+        <div className="home-div">
+          <Tooltip title="User Email">
+          <div className="user-mail">Namaste, {userEmail} !
+            <span></span>
+          </div>
+          </Tooltip>
+          <Tooltip title='Logout' className="logoutBtn">
+            <LogoutOutlined onClick={handleLogout} />
+          </Tooltip>
+        </div>
+
+        <div style={{marginTop: 20}}>
+        <Box sx={{padding: '10px 12px 50px 12px'}}>
      {info?.length > 0 ?  
     <CategoryTableView data={info} /> :
     
@@ -144,6 +199,10 @@ const Home = () => {
     </Modal>
 
     </Box>
+      </div>    
+      </Card>
+    </Protected>
+    
   );
 };
 

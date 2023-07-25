@@ -2,9 +2,7 @@ import { useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Box, Card, TextField, Typography, Button } from "@mui/material";
 import Alert from "./Alert";
-import firebase from "firebase/compat/app";
-import firebaseConfig from "../../data/Firebase";
-import "firebase/database";
+import firebase from '../../data/Firebase'
 import ProductTabelView from "./ProductTabelView";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {useNavigate} from "react-router-dom"
@@ -61,7 +59,6 @@ const Product = () => {
 
  
   const getProducts = () => {
-    firebase.initializeApp(firebaseConfig);
     const tableRef = firebase.database().ref('products/'+location.state.name);
     tableRef.on("value", (snapshot: any) => {
       const tableData = snapshot.val();

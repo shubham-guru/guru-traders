@@ -14,21 +14,22 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import Alert from "./Alert";
 import actions from "../../domain/Actions";
-import firebase from "firebase/compat/app";
-import firebaseConfig from "../../data/Firebase";
-import "firebase/database";
+import { Input } from 'antd';
+import firebase from '../../data/Firebase';
 
 type myProps = {
   data: Array<any>;
   category: string;
 };
 const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
+  const { Search } = Input;
   const [open, setOpen] = useState<boolean>(false);
   const [productName, setProductName] = useState<string>("");
   const [productQty, setProductQty] = useState<number>(0);
   const [updatedValue, setUpdatedValue] = useState<number>(0);
   const [action, setAction] = useState<string>("");
   const [selectedName, setSelectedName] = useState<string>("");
+  const [searchText, setSearchText] = useState<string>("");
 
   const handleOpen = (value: string, name: string) => {
     setOpen(true);
@@ -79,7 +80,6 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
   };
 
   const updateQty = (action: string, value: any, name: string) => {
-    firebase.initializeApp(firebaseConfig);
     const tableRef = firebase.database().ref('products/'+category);
     tableRef.once("value",  (snapshot: any) => {
     const tableData = snapshot.val()
@@ -123,7 +123,6 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
   }
 
   const deleteProduct = (deleteProduct: string) => {
-    firebase.initializeApp(firebaseConfig);
     const tableRef = firebase.database().ref("products/"+category);
     tableRef.once("value",  (snapshot: any) => {
     const tableData = snapshot.val()
@@ -164,7 +163,13 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
     },
   };
 
-
+  const handleSearch = () => {
+    var a: Array<any> = [];
+    Object.values(data).forEach((key)=>{
+      console.log(Object.values(key).includes(searchText))
+    });
+  }
+  
   return (
     <Box sx={{backgroundColor: 'antiquewhite'}}>
       <table width="100%">
@@ -198,7 +203,9 @@ const ProductTabelView: React.FC<myProps> = ({ data, category }) => {
             Add Product
           </Button>
         </div>
-
+        <div style={{margin: 10}}>
+          <Search placeholder="search product..." onChange={(e)=> setSearchText(e.target.value)} enterButton="Search" onSearch={handleSearch} size="large" />
+        </div>
         <div
           style={{
             display: "flex",

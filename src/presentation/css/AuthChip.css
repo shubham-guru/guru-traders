@@ -1,0 +1,15 @@
+.auth-chip{
+    margin-top: -40px;
+    width: 100%;
+    display: flex;
+    margin-bottom: 40px;
+    align-items: center; 
+    justify-content: center;
+    border: 1.5px solid #0f736eea; 
+    border-radius: 5px; 
+    height: 40px;
+    background-color: #00fff2c8;
+}
+.auth-chip-text{
+    font-family: 'Raleway', sans-serif,
+}

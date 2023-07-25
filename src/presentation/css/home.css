@@ -1,0 +1,75 @@
+  .main-row{
+    background-color: #20242b;
+  }
+  .main-card{
+    background-color: #20242b;
+    border-radius: 0px !important;
+  }
+  .idStyle {
+    cursor: pointer;
+    font-family: "Mulish", sans-serif;
+    letter-spacing: 1px;
+    color: #c0bebe;
+    font-size: 10px;
+    margin-left: 4px;
+  }
+ 
+  .home-div{
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    background-color: #2bbcb4;
+    padding: 20px;
+  }
+  .logoutBtn{
+    cursor: pointer;
+  }   
+  .user-mail{
+    position: relative;
+    color: #ffffff;
+    background-color: transparent;
+    font-size: 16px;
+    border: none;
+    overflow: hidden;
+    transition: 0.5s;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: "Mulish", sans-serif;
+  }
+  .user-mail span {
+    position: relative;
+    display: block;
+  }
+  .user-mail span:nth-child(1) {
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #01FFF4);
+    animation: btn-anim1 2s linear infinite;
+  }
+
+  @keyframes btn-anim1 {
+    0% {
+      left: -100%;
+    }
+  
+    50%,
+    100% {
+      left: 100%;
+    }
+  }
+  
+
+
+  @media screen and (min-width: 250px) {
+    .user-mail{
+      font-size: 12px;
+    }
+  }
+  
+  @media screen and (min-width: 900px) {
+    .user-mail{
+      font-size: 13px;
+    }
+  }
+  
